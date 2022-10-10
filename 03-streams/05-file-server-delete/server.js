@@ -1,6 +1,8 @@
 const url = require('url');
 const http = require('http');
 const path = require('path');
+const fs = require('fs');
+
 
 const server = new http.Server();
 
@@ -12,6 +14,29 @@ server.on('request', (req, res) => {
 
   switch (req.method) {
     case 'DELETE':
+      fs.unlink(filepath, (err) => {
+        if (err) {
+          fs.access(`${filepath}`, fs.constants.F_OK, (err) => {
+            if (pathname.includes('/')) {
+              res.statusCode = 400;
+              res.end('not supported nesting path 400');
+            } else if (err) {
+              res.statusCode = 404;
+              res.end('file not found 404');
+            } else {
+              res.statusCode = 500;
+              res.end('some strange error 500');
+            }
+          });
+        } else {
+          res.statusCode = 200;
+          res.end('file was deleted 500');
+        }
+      });
+
+      req.on('aborted', () => {
+        stream.destroy();
+      });
 
       break;
 
