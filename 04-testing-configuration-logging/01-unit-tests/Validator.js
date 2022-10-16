@@ -14,24 +14,29 @@ module.exports = class Validator {
 
       if (type !== rules.type) {
         errors.push({field, error: `expect ${rules.type}, got ${type}`});
-        return errors;
+        // return errors;
+        continue;
       }
 
       switch (type) {
         case 'string':
           if (value.length < rules.min) {
             errors.push({field, error: `too short, expect ${rules.min}, got ${value.length}`});
+            break;
           }
           if (value.length > rules.max) {
             errors.push({field, error: `too long, expect ${rules.max}, got ${value.length}`});
+            break;
           }
           break;
         case 'number':
           if (value < rules.min) {
             errors.push({field, error: `too little, expect ${rules.min}, got ${value}`});
+            break;
           }
           if (value > rules.max) {
-            errors.push({field, error: `too big, expect ${rules.min}, got ${value}`});
+            errors.push({field, error: `too big, expect ${rules.max}, got ${value}`});
+            break;
           }
           break;
       }
