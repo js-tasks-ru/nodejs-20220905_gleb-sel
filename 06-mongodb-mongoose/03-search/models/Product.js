@@ -5,6 +5,11 @@ const productSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
+    // index: {
+    //   name: TextSearchIndex,
+    //   weights: 10,
+    //   default_language: 'russian',
+    // },
   },
 
   description: {
@@ -31,5 +36,13 @@ const productSchema = new mongoose.Schema({
   images: [String],
 
 });
+
+productSchema.index(
+    {title: 'text', description: 'text'},
+    {
+      name: 'TextSearchIndex',
+      weights: {title: 10, description: 5},
+      default_language: 'russian',
+    });
 
 module.exports = connection.model('Product', productSchema);
