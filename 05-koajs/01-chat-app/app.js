@@ -12,24 +12,35 @@ const router = new Router();
 // let longpoling = true;
 const messages = [];
 
+const clients = new Set();
+
 router.get('/subscribe', async (ctx, next) => {
-  await new Promise((resolve) => {
-    if (ctx.state.longpoling !== undefined && !ctx.state.longpoling ) {
-      console.log('test');
-      resolve(ctx.state.longpoling = true);
-    }
-  }).then(() => {
-    ctx.status = 200;
-    messages[0] ? ctx.body = messages.pop() : null;
+  const message = await new Promise((resolve, reject) => {
+    clients.add(resolve);
+
+    ctx.res.on('close', function() {
+      clients.delete(resolve);
+      resolve();
+    });
   });
+
+  ctx.body = message;
 });
 
 router.post('/publish', async (ctx, next) => {
-  // clearInterval(ctx.state.timer);
-  messages.push(ctx.request.body.message);
-  ctx.body = 'сообщение отправлено ok';
-  ctx.status = 201;
-  ctx.state.longpoling = false;
+  const message = ctx.request.body.message;
+
+  if (!message) {
+    ctx.throw(400, 'required field `message` is missing');
+  }
+
+  clients.forEach(function(resolve) {
+    resolve(message);
+  });
+
+  clients.clear();
+
+  ctx.body = 'ok';
 });
 
 app.use(router.routes());
