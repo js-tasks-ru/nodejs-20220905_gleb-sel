@@ -1,3 +1,5 @@
+// require('dotenv').config({path: path.join(__dirname, './secret.yaml')});
+
 module.exports = {
   mongodb: {
     uri: (process.env.NODE_ENV === 'test') ?

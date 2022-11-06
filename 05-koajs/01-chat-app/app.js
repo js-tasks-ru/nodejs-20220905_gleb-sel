@@ -4,9 +4,13 @@ const app = new Koa();
 
 app.use(require('koa-static')(path.join(__dirname, 'public')));
 app.use(require('koa-bodyparser')());
+// записывает значение в ctx.request.body;
+
 
 const Router = require('koa-router');
 const router = new Router();
+// let longpoling = true;
+const messages = [];
 
 const clients = new Set();
 
